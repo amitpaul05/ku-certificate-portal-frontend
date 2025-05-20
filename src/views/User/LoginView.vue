@@ -3,11 +3,7 @@
     class="container flex min-h-screen justify-center items-center flex-col px-6 py-12 lg:px-8"
   >
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <!-- <img
-        class="mx-auto w-[200px]"
-        src="/src/assets/images/logo.png"
-        alt="Your Company"
-      /> -->
+      
       <h2
         class="text-center text-2xl/9 font-bold tracking-tight text-gray-900"
       >
@@ -64,14 +60,13 @@
 import { reactive, ref, computed } from 'vue'
 import userService from '@/services/userService.js'
 import { useUserStore } from '@/stores/userStore.js'
-import { useLocaleStore } from '@/stores/languageStore.js'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { required } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
 
 const userStore = useUserStore()
-const localeStore = useLocaleStore()
+
 // const toast = useToast()
 const router = useRouter()
 const $externalResults = ref({})
@@ -120,8 +115,7 @@ async function handleSubmit() {
     userStore.setUser(userDetails)
     loading.value = false
 
-    localeStore.setLocale('EN')
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'student' })
   } catch (error) {
     const errorResponse = error['response']
     const errorData = errorResponse['data']

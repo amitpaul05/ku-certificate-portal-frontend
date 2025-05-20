@@ -1,0 +1,115 @@
+<template>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside :class="['bg-gray-800 text-white transition-all duration-300', collapsed ? 'w-20' : 'w-64']">
+      <div class="h-16 flex items-center justify-center text-lg font-bold border-b border-gray-700">
+        <span v-if="!collapsed">Logo</span>
+      </div>
+      <ul class="p-2 space-y-1">
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 1</li>
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 2</li>
+        
+      </ul>
+      <div class="text-center py-4">
+        <button @click="collapsed = !collapsed" class="text-xs text-gray-400 hover:text-white">
+          {{ collapsed ? 'Expand' : 'Collapse' }}
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Layout -->
+    <div class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="h-16 bg-white shadow flex mx-auto items-center px-4">
+        <h1 class="text-xl font-semibold">Welcome to KU CERTIFICATE CLEARANCE PORTAL</h1>
+      </header>
+
+      <!-- Content -->
+      <main class="p-4 flex-1 bg-gray-100">
+        
+         <div class="flex justify-center pt-20 relative">
+    <div
+      class="bg-white w-[50%] text-2xl p-6 rounded-lg shadow hover:bg-blue-100/50 hover:scale-105 flex justify-center text-blue-600 font-semibold cursor-pointer transition -mt-10 hover:underline"
+      @click="goToForm"> Apply for New Certificate
+    </div>
+  </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="h-16 bg-white text-center text-sm text-gray-500 flex items-center justify-center">
+        Automatic Certificate Clearance Portal ©{{ new Date().getFullYear() }} Created by ECE 21
+      </footer>
+    </div>
+  </div>
+</template>
+
+<script setup>
+
+import { computed, ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router' 
+import studentService from '@/services/studentService'
+import hallService from '@/services/hallService';
+import { useUserStore } from '@/stores/userStore';
+
+const collapsed = ref(false)
+const router = useRouter()
+const allCompanyList = ref([])
+const options = ref([])
+const selectedCompany = ref(null)
+
+const goToForm = () => {
+  router.push({ name: 'studentForm' })
+}
+
+
+
+const getAllStudent = async () => {
+  try {
+    const response = await studentService.getAllStudent()
+    allCompanyList.value = response.data.results
+    options.value = response.data.results.map(company => ({
+      value: company.id,
+      label: company.name,
+    }))
+  } catch (error) {
+    console.log(error)
+    toast.error('Something went wrong', { timeout: 1500 })
+  }
+}
+
+onMounted(async () => {
+  // console.log("user",useUserStore().user.studentDetails.student_id)
+  await getAllStudent()
+  // if (recordId) {
+  //   try {
+  //     const response =
+  //       await bookingCompanyService.getBookingCompanyById(recordId)
+  //     bookingCompanyDefaultValue.value = response.data
+
+  //     if (response.data.company && allCompanyList.value.length) {
+  //       const previousSelectedCompany = allCompanyList.value.find(
+  //         item => item.id === response.data.company,
+  //       )
+  //       if (previousSelectedCompany) {
+  //         bookingCompanyDefaultValue.value.company = previousSelectedCompany.id
+  //         selectedCompany.value = previousSelectedCompany.id
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error('Failed to fetch academy details:', err)
+  //   }
+  // }
+})
+
+
+
+
+// req = hallService.getAllHalls()
+// console.log(req)
+
+</script>
+
+<style>
+
+</style>

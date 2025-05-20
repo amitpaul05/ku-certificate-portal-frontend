@@ -13,17 +13,7 @@ const userStore = useUserStore()
 
 function getBaseURL() {
   console.log("called the base url")
-  const locale = localStorage.getItem('locale');
-  console.log(locale)
-  if(locale) {
-    return locale?.toLowerCase() === 'en'
-    ? import.meta.env.VITE_API_URL
-    : import.meta.env.VITE_API_BN_URL
-  }
-  else {
-    return import.meta.env.VITE_API_URL
-  }
-
+  return import.meta.env.VITE_API_URL
 }
 
 

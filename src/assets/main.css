@@ -1,12 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-/* ./src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@import "tailwindcss";
 
 
-html, body, #app {
+/* html, body, #app {
   font-family: "Montserrat", sans-serif;
 }
 
@@ -31,9 +29,11 @@ html, body, #app {
 .sales-modal .ant-modal-content {
   max-height: 650px;
   overflow-y: auto;
-}
+} */
 
 /* For WebKit-based browsers (Chrome, Safari, Edge) */
+/* 
+
 ::-webkit-scrollbar {
   width: 8px;
   border-radius: 20px;
@@ -48,4 +48,4 @@ html, body, #app {
   width: 8px;
   background: #b2afaf;
   border-radius: 20px;
-}
+} */
