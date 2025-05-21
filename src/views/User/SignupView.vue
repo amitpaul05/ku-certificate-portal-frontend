@@ -13,6 +13,7 @@
       >
         {{ 'Sign up to your account' }}
       </h2>
+      
     </div>
     <div
       class="mt-2 sm:mx-auto sm:w-full sm:max-w-sm md:max-w-xl bg-[#fff] p-12 shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] rounded-lg"

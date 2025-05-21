@@ -12,7 +12,7 @@ setActivePinia(pinia)
 const userStore = useUserStore()
 
 function getBaseURL() {
-  console.log("called the base url")
+  // console.log("called the base url")
   return import.meta.env.VITE_API_URL
 }
 

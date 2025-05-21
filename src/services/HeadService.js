@@ -1,16 +1,16 @@
 import apiClient from './axiosService.js'
 
-const urlBase = '/hall'
+const urlBase = '/form'
 
 export default {
 
 
-  getAllHall() {
+  getAllHead() {
     return apiClient.get(`${urlBase}`)
 
   },
 
-  getHallById(HallId) {
-    return apiClient.get(`${urlBase}/${HallId}`)
+  getHeadById(HeadId) {
+    return apiClient.get(`${urlBase}/${HeadId}`)
   },
 }

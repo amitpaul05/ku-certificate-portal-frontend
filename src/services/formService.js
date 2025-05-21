@@ -7,9 +7,9 @@ export default {
     return apiClient.post(`${urlBase}`, Form)
   },
 
-//   getAllCities() {
-//     return apiClient.get(`${urlBase}`)
-//   },
+  getAllForm() {
+    return apiClient.get(`${urlBase}`)
+  },
 
 //   getFormById(FormId) {
 //     return apiClient.get(`${urlBase}/${FormId}`)
