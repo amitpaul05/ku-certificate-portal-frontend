@@ -2,14 +2,12 @@
   <div class="p-6 bg-gray-100 min-h-screen">
     <h1 class="text-2xl font-bold text-blue-800 mb-4">Certificate Approval Status</h1>
 
-    <!-- 🎉 Approval Message -->
-    <div v-if="statusRecords.length > 0 && isFullyApproved"
-      class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+    <div v-if="statusRecords.length > 0 && statusRecords.every(status => Object.values(status).every(Boolean))"
+         class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
       🎉 <strong>Congratulations!</strong> Your request is approved.
       Please visit the Academic Section to collect your certificate.
     </div>
 
-    <!-- 📋 Status Table -->
     <table class="w-full table-auto border border-gray-300 rounded shadow bg-white">
       <thead class="bg-blue-900 text-white text-left">
         <tr>
@@ -24,67 +22,49 @@
       <tbody>
         <tr v-for="(record, index) in statusRecords" :key="index" class="hover:bg-blue-50 transition">
           <td class="px-4 py-2">{{ index + 1 }}</td>
+          <td class="px-4 py-2"><StatusBadge :approved="record.librarian" /></td>
+          <td class="px-4 py-2"><StatusBadge :approved="record.hall_provost" /></td>
+          <td class="px-4 py-2"><StatusBadge :approved="record.head" /></td>
+          <td class="px-4 py-2"><StatusBadge :approved="record.dsa" /></td>
           <td class="px-4 py-2">
-            <StatusBadge :approved="record.librarian" />
-          </td>
-          <td class="px-4 py-2">
-            <StatusBadge :approved="record.hall_provost" />
-          </td>
-          <td class="px-4 py-2">
-            <StatusBadge :approved="record.head" />
-          </td>
-          <td class="px-4 py-2">
-            <StatusBadge :approved="record.dsa" />
-          </td>
-          <td class="px-4 py-2">
-            <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700" @click="openModal(index)">
-              View Details
-            </button>
+            <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                    @click="openModal(index)">View Details</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- 🔍 Modal -->
+    <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Form Details</h2>
 
-        <!-- 🧾 Form Details: Basic Info -->
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">🎓 Basic Information</h3>
-        <div class="space-y-1 mb-4">
-          <div v-for="(value, key) in selectedRecord.basic" :key="key" class="flex justify-between border-b pb-1">
-            <span class="font-medium text-gray-700 capitalize">{{ formatKey(key) }}:</span>
-            <span class="text-gray-900">{{ formatValue(value) }}</span>
+        <div v-for="section in detailSections" :key="section.label" class="mb-4">
+          <h3 class="text-lg font-semibold text-gray-700 mb-2">{{ section.label }}</h3>
+          <div class="space-y-1">
+            <div v-for="(value, key) in section.data" :key="key" class="flex justify-between border-b pb-1">
+              <span class="font-medium text-gray-700 capitalize">{{ formatKey(key) }}:</span>
+              <span class="text-gray-900">{{ formatValue(value) }}</span>
+            </div>
           </div>
         </div>
 
-        <!-- 👨‍🎓 Student Details -->
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">👨‍🎓 Student Details</h3>
-        <div class="space-y-1 mb-4">
-          <div v-for="(value, key) in selectedRecord.student" :key="key" class="flex justify-between border-b pb-1">
-            <span class="font-medium text-gray-700 capitalize">{{ formatKey(key) }}:</span>
-            <span class="text-gray-900">{{ formatValue(value) }}</span>
+        <!-- Approval Section -->
+        <div v-if="currentRole" class="mt-6 border-t pt-4">
+          <h3 class="font-semibold mb-2">🔐 {{ currentRoleLabel }} Approval</h3>
+          <div class="flex items-center gap-4 mb-4">
+            <label class="flex items-center gap-2">
+              <input type="radio" v-model="approvalDecision" value="approved" /> Approved
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" v-model="approvalDecision" value="rejected" /> Rejected
+            </label>
           </div>
-        </div>
-
-        <!-- 🏫 Discipline Details -->
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">🏫 Discipline Details</h3>
-        <div class="space-y-1 mb-4">
-          <div v-for="(value, key) in selectedRecord.discipline" :key="key" class="flex justify-between border-b pb-1">
-            <span class="font-medium text-gray-700 capitalize">{{ formatKey(key) }}:</span>
-            <span class="text-gray-900">{{ formatValue(value) }}</span>
-          </div>
-        </div>
-
-        <!-- 🏠 Hall Details -->
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">🏠 Hall Details</h3>
-        <div class="space-y-1 mb-4">
-          <div v-for="(value, key) in selectedRecord.hall" :key="key" class="flex justify-between border-b pb-1">
-            <span class="font-medium text-gray-700 capitalize">{{ formatKey(key) }}:</span>
-            <span class="text-gray-900">{{ formatValue(value) }}</span>
-          </div>
+          <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  :disabled="!approvalDecision"
+                  @click="submitApproval">
+            Submit Decision
+          </button>
         </div>
 
         <div class="flex justify-end mt-4">
@@ -98,23 +78,34 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import StatusBadge from './StatusBadge.vue';
 import formService from '@/services/formService';
 import { toast } from 'vue3-toastify';
 
-// 🧠 Reactive state
 const allFormList = ref([]);
 const statusRecords = ref([]);
-const isFullyApproved = ref(false);
 
-// 📦 Modal state
 const showModal = ref(false);
 const selectedRecord = ref(null);
+const selectedRecordIndex = ref(null);
+const approvalDecision = ref(null);
+const currentRole = ref(null);
 
-// 🔍 Show modal and extract record parts
+const currentRoleLabel = computed(() => {
+  return currentRole.value?.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+});
+
+const detailSections = computed(() => [
+  { label: 'Basic Information', data: selectedRecord.value?.basic || {} },
+  { label: 'Student Details', data: selectedRecord.value?.student || {} },
+  { label: 'Discipline Details', data: selectedRecord.value?.discipline || {} },
+  { label: 'Hall Details', data: selectedRecord.value?.hall || {} },
+]);
+
 const openModal = (index) => {
   const form = allFormList.value[index];
+  selectedRecordIndex.value = index;
 
   selectedRecord.value = {
     basic: {
@@ -131,9 +122,23 @@ const openModal = (index) => {
     },
     student: form.student_details,
     discipline: form.discipline_details,
-    hall: form.hall_details,
+    hall: form.hall_details
   };
 
+  const status = {
+    librarian: form.is_librarian_approved,
+    hall_provost: form.hall_details?.current_provost !== null,
+    head: form.is_head_approved,
+    dsa: form.is_dsa_approved
+  };
+
+  if (!status.librarian) currentRole.value = 'librarian';
+  else if (!status.hall_provost) currentRole.value = 'hall_provost';
+  else if (!status.head) currentRole.value = 'head';
+  else if (!status.dsa) currentRole.value = 'dsa';
+  else currentRole.value = null;
+
+  approvalDecision.value = null;
   showModal.value = true;
 };
 
@@ -141,7 +146,34 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-// 📡 Fetch all form data
+const submitApproval = async () => {
+  if (!currentRole.value || !approvalDecision.value) return;
+
+  const formIndex = selectedRecordIndex.value;
+  const formId = allFormList.value[formIndex].id;
+  const isApproved = approvalDecision.value === 'approved';
+
+  try {
+    await formService.updateApproval(formId, currentRole.value, isApproved);
+    toast.success(`Successfully ${approvalDecision.value} by ${currentRoleLabel.value}`);
+
+    // Update local statusRecords to reflect approval change
+    statusRecords.value[formIndex][currentRole.value] = isApproved;
+
+    // Also update in allFormList so modal can reflect change if reopened
+    if (currentRole.value === 'hall_provost') {
+      allFormList.value[formIndex].hall_details.current_provost = isApproved ? 'ApprovedPerson' : null;
+    } else {
+      allFormList.value[formIndex][`is_${currentRole.value}_approved`] = isApproved;
+    }
+
+    closeModal();
+  } catch (error) {
+    console.error(error);
+    toast.error("Approval failed");
+  }
+};
+
 const getAllForm = async () => {
   try {
     const response = await formService.getAllForm();
@@ -149,41 +181,24 @@ const getAllForm = async () => {
 
     statusRecords.value = response.data.results.map(form => ({
       librarian: form.is_librarian_approved,
-      hall_provost: form.hall_details?.current_provost !== null, // Customize logic as needed
+      hall_provost: form.hall_details?.current_provost !== null,
       head: form.is_head_approved,
       dsa: form.is_dsa_approved
     }));
-
-    if (statusRecords.value.length > 0) {
-      isFullyApproved.value = Object.values(statusRecords.value[0]).every(Boolean);
-    }
   } catch (error) {
     console.error("Error fetching form data:", error);
-    toast.error("Something went wrong", { timeout: 1500 });
+    toast.error("Something went wrong");
   }
 };
 
-// Run on mount
 onMounted(getAllForm);
 
-// 🧹 Format helpers
-const formatKey = (key) => {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/^./, str => str.toUpperCase());
-};
-
-const formatValue = (value) => {
-  if (typeof value === 'boolean') {
-    return value ? '✅ Approved' : '❌ Not Approved';
-  } else if (value === null || value === undefined) {
-    return '—';
-  }
-  return value;
-};
+const formatKey = (key) => key.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase());
+const formatValue = (value) => typeof value === 'boolean' ? (value ? '✅ Approved' : '❌ Not Approved') : (value ?? '—');
 </script>
 
 <style scoped>
-/* Optional: Add a transition for modal open/close */
+input[type="radio"] {
+  accent-color: green;
+}
 </style>

@@ -88,7 +88,7 @@ const getAllStudent = async () => {
 }
 
 onMounted(async () => {
-  // console.log("user",useUserStore().user.studentDetails.student_id)
+  console.log("user",useUserStore().user)
   await getAllStudent()
   // if (recordId) {
   //   try {
