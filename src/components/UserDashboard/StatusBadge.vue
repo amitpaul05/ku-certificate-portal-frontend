@@ -1,16 +1,15 @@
+<!-- StatusBadge.vue -->
 <template>
   <span
     :class="[
-      'inline-block px-3 py-1 text-sm font-semibold rounded-full',
-      approved ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'
+      'px-2 py-1 text-xs font-semibold rounded-full',
+      approved ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
     ]"
   >
-    {{ approved ? 'Approved' : 'Not Approved Yet' }}
+    {{ approved ? 'Approved' : 'Pending' }}
   </span>
 </template>
 
 <script setup>
-defineProps({
-  approved: Boolean
-})
+defineProps({ approved: Boolean });
 </script>

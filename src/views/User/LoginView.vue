@@ -32,7 +32,7 @@
         </a-form-item>
       </a-form>
 
-      <!-- <p class="mt-10 text-center text-sm text-gray-500">
+      <!-- <p class="mt-10  text-center text-sm text-gray-500">
         {{ "Don't have an account?" }}
         <router-link :to="{ name: 'signup' }" class="text-primary font-semibold">{{ 'Register' }}</router-link>
       </p> -->
@@ -100,8 +100,6 @@ async function handleSubmit() {
     loading.value = false
 
     router.push({ name: 'student' })
-
-
 
   } catch (error) {
     const errorResponse = error['response']

@@ -120,23 +120,7 @@
             />
           </a-form-item>
 
-          <!-- <a-form-item
-            label="Last Date of Exam"
-            name="examDate"
-            :rules="[
-              {
-                required: true,
-                message: 'Please provide the Last Date of Exam!',
-              },
-            ]"
-          >
-            <a-date-picker
-              v-model:value="formserviceDefaultValue.pas"
-              picker="year"
-              style="width: 100%"
-              placeholder="Select Year"
-            />
-          </a-form-item> -->
+          
 
           <a-form-item class="text-center">
             <a-button
