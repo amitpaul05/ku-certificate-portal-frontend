@@ -21,7 +21,7 @@ export const useUserStore = defineStore('userStore', () => {
     // No default detail fields here
   }
 
- console.log("userDefaultSchema", userDefaultSchema)
+//  console.log("userDefaultSchema", userDefaultSchema)
  
   const user = reactive({ ...userDefaultSchema })
 

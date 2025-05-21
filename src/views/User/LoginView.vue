@@ -1,57 +1,41 @@
 <template>
-  <div
-    class="container flex min-h-screen justify-center items-center flex-col px-6 py-12 lg:px-8"
-  >
+  <div class="containe flex min-h-screen justify-center items-center flex-col px-6 py-12 lg:px-8 bg-[url('src/assets/Ku.jpg')] bg-cover bg-center">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+
       
-      <h2
-        class="text-center text-2xl/9 font-bold tracking-tight text-gray-900"
-      >
-        {{ 'Sign in to your account' }}
-      </h2>
     </div>
     <div
-      class="mt-2 sm:mx-auto sm:w-full sm:max-w-sm md:max-w-xl bg-[#fff] p-12 shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] rounded-lg"
-    >
-      <a-form
-        @submit.prevent="handleSubmit"
-        method="POST"
-        :model="formState"
-        name="basic"
-        autocomplete="off"
-        @finish="onFinish"
-        @finishFailed="onFinishFailed"
-      >
-        <a-form-item
-          label="Email"
-          name="email"
-          :rules="[
-            {
-              required: true,
-              type: 'email',
-              message: 'Please input a valid email!',
-            },
-          ]"
-        >
+      class="mt-2 sm:mx-auto sm:w-full sm:max-w-sm md:max-w-xl bg-white/50 backdrop-blur-s p-12 shadow-[rgba(7,_65,_210,_0.1)_0px_9px_30px] rounded-lg">
+    <h2 class="text-center text-2xl/9 font-bold tracking-tight text-gray-900 my-2">
+        {{ 'Sign in to your account' }}
+      </h2>
+      
+      <a-form @submit.prevent="handleSubmit" method="POST" :model="formState" name="basic" autocomplete="off"
+        @finish="onFinish" @finishFailed="onFinishFailed">
+        <a-form-item label="Email" name="email" :rules="[
+          {
+            required: true,
+            type: 'email',
+            message: 'Please input a valid email!',
+          },
+        ]">
           <a-input v-model:value="formState.email" />
         </a-form-item>
 
-        <a-form-item
-          label='Password'
-          name="password"
-          :rules="[{ required: true, message: 'Please input your password!' }]"
-        >
+        <a-form-item label='Password' name="password"
+          :rules="[{ required: true, message: 'Please input your password!' }]">
           <a-input-password v-model:value="formState.password" />
         </a-form-item>
 
         <a-form-item class="text-center">
-          <a-button class="w-full" type="primary" html-type="submit" :loading="loading">{{ 'Submit' }}</a-button>
+          <a-button class="w-full text-3xl" type="primary" html-type="submit" :loading="loading">{{ 'Login' }}</a-button>
         </a-form-item>
       </a-form>
-      <p class="mt-10 text-center text-sm text-gray-500">
+
+      <!-- <p class="mt-10 text-center text-sm text-gray-500">
         {{ "Don't have an account?" }}
         <router-link :to="{ name: 'signup' }" class="text-primary font-semibold">{{ 'Register' }}</router-link>
-      </p>
+      </p> -->
     </div>
   </div>
 </template>
@@ -116,13 +100,16 @@ async function handleSubmit() {
     loading.value = false
 
     router.push({ name: 'student' })
+
+
+
   } catch (error) {
     const errorResponse = error['response']
     const errorData = errorResponse['data']
     if (errorResponse.status == 401) {
       serverError.value = errorData['detail'].split(',')
       toast.error(serverError.value[0], { timeout: 1500 })
-    }else {
+    } else {
       toast.error("Something went wrong, Please try again with valid information", { timeout: 1500 })
     }
     loading.value = false
@@ -131,7 +118,6 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
-
 :deep(.ant-row) {
   display: inline;
 }

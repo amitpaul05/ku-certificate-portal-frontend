@@ -3,12 +3,14 @@
     <!-- Sidebar -->
     <aside :class="['bg-gray-800 text-white transition-all duration-300', collapsed ? 'w-20' : 'w-64']">
       <div class="h-16 flex items-center justify-center text-lg font-bold border-b border-gray-700">
-        <span v-if="!collapsed">Logo</span>
+        <span v-if="!collapsed">Menu</span>
       </div>
       <ul class="p-2 space-y-1">
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 1</li>
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 2</li>
-        
+
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center" @click="goToStatus"> Status </li>
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center" @click="goToLogin"> Sign Out </li>
+        <!-- <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 2</li> -->
+
       </ul>
       <div class="text-center py-4">
         <button @click="collapsed = !collapsed" class="text-xs text-gray-400 hover:text-white">
@@ -26,13 +28,13 @@
 
       <!-- Content -->
       <main class="p-4 flex-1 bg-gray-100">
-        
-         <div class="flex justify-center pt-20 relative">
-    <div
-      class="bg-white w-[50%] text-2xl p-6 rounded-lg shadow hover:bg-blue-100/50 hover:scale-105 flex justify-center text-blue-600 font-semibold cursor-pointer transition -mt-10 hover:underline"
-      @click="goToForm"> Apply for New Certificate
-    </div>
-  </div>
+
+        <div class="flex justify-center pt-20 relative">
+          <div
+            class="bg-white w-[50%] text-2xl p-6 rounded-lg shadow hover:bg-blue-100/50 hover:scale-105 flex justify-center text-blue-600 font-semibold cursor-pointer transition -mt-10 hover:underline"
+            @click="goToForm"> Apply for New Certificate
+          </div>
+        </div>
 
       </main>
 
@@ -47,9 +49,8 @@
 <script setup>
 
 import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 import studentService from '@/services/studentService'
-import hallService from '@/services/hallService';
 import { useUserStore } from '@/stores/userStore';
 
 const collapsed = ref(false)
@@ -60,6 +61,14 @@ const selectedCompany = ref(null)
 
 const goToForm = () => {
   router.push({ name: 'studentForm' })
+}
+
+const goToStatus = () => {
+  router.push({ name: 'statuspage' })
+}
+const goToLogin = () => {
+  localStorage.removeItem('token')
+  router.push({ name: 'login' })
 }
 
 
@@ -103,13 +112,6 @@ onMounted(async () => {
 })
 
 
-
-
-// req = hallService.getAllHalls()
-// console.log(req)
-
 </script>
 
-<style>
-
-</style>
+<style></style>
