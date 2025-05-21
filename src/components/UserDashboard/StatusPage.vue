@@ -209,11 +209,14 @@ const openModal = (index) => {
       is_head_approved: form.is_head_approved,
       is_librarian_approved: form.is_librarian_approved,
       is_dsa_approved: form.is_dsa_approved,
-      is_controller_approved: form.is_controller_approved,
+      is_provost_approved: form.is_provost_approved,
     },
     student: form.student_details,
     discipline: form.discipline_details,
-    hall: form.hall_details,
+    // hall: form.hall_details,
+    hall: {
+      name: form.hall_details?.name || "—", // ✅ Only pick the hall name
+    },
   };
 
   const status = {
