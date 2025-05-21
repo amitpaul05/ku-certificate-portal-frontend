@@ -108,20 +108,15 @@
             />
           </a-form-item>
 
-          <a-form-item
-            label="Last Date of Exam"
-            name="examDate"
-            :rules="[
-              {
-                required: true,
-                message: 'Please provide the Last Date of Exam!',
-              },
-            ]"
+         <a-form-item
+            label="Date of Last Exam"
+            name="date"
+            :rules="[{ required: true, message: 'Please select a date!' }]"
           >
             <a-date-picker
               v-model:value="formserviceDefaultValue.date_of_last_exam"
-              style="width: 100%"
-              placeholder="Select Date"
+              valueFormat="YYYY-MM-DD"
+              @change="handleDateChange"
             />
           </a-form-item>
 
@@ -168,7 +163,7 @@ import { useRoute, useRouter } from "vue-router";
 import studentService from "@/services/studentService";
 import formService from "@/services/formService";
 import hallService from "@/services/hallService";
-import dayjs from "dayjs";
+
 
 const router = useRouter();
 const $externalResults = ref({});
@@ -215,6 +210,10 @@ const handleChange = (value) => {
   formserviceDefaultValue.value.hall = value;
 };
 
+const handleDateChange = (date, dateString) => {
+  formserviceDefaultValue.value.date_of_last_exam = dateString;
+};
+
 const handleBlur = () => {
   console.log("blur");
 };
@@ -228,36 +227,16 @@ const filterOption = (input, option) => {
 };
 
 const rules = computed(() => ({
-  // title: { required },
-  // code: { required },
+  hall: { required },
+  cgpa: { required },
 }));
 
-// const v$ = useVuelidate(rules, formserviceDefaultValue, {
-//   $externalResults,
-// });
-
 async function handleSubmit() {
-  //   const locale = localStorage.getItem('locale')
-
-  //   if (locale && locale.toLocaleLowerCase() === 'bn') {
-  //     formserviceDefaultValue.value.title = formserviceDefaultValue.value.title_bn
-  //   } else {
-  //     formserviceDefaultValue.value.title = formserviceDefaultValue.value.title_en
-  //   }
-
-  
-  // When submitting the form:
-  const formData = {
-    ...formserviceDefaultValue.value,
-    date_of_last_exam: formserviceDefaultValue.value.date_of_last_exam
-      ? dayjs(formserviceDefaultValue.value.date_of_last_exam).format(
-          "YYYY-MM-DD"
-        )
-      : null,
-  };
-console.log(formData.date_of_last_exam, typeof formData.date_of_last_exam);
-  // Now use formData (send to server, etc.)
-  console.log(formData);
+  console.log(
+    "Submitting:",
+    formserviceDefaultValue.value.date_of_last_exam,
+    typeof formserviceDefaultValue.value.date_of_last_exam
+  );
 
   console.log(
     "Submitting:",
@@ -266,17 +245,13 @@ console.log(formData.date_of_last_exam, typeof formData.date_of_last_exam);
   );
   // Output should be: "2025-06-15" "string"
 
-  // $externalResults.value = [];
-  // const isValid = await v$.value.$validate();
-  // if (!isValid) {
-  //   toast.error("Please fill out all required fields.");
-  //   return;
-  // }
+  
+
+  console.log("Form data:", formserviceDefaultValue.value);
   try {
     await formService.createForm(formserviceDefaultValue.value);
     toast.success("Form created successfully", { timeout: 1500 });
 
-    // v$.value.$reset();
     router.push({ name: "student" });
   } catch (err) {
     // console.error(err);
