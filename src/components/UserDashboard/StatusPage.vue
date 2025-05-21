@@ -17,7 +17,9 @@
     >
       <thead class="bg-blue-900 text-white text-left">
         <tr>
-          <th class="px-4 py-2">#</th>
+          <th class="px-4 py-2">Student ID</th>
+          <th class="px-4 py-2">Discipline</th>
+          <th class="px-4 py-2">Hall</th>
           <th class="px-4 py-2">Librarian</th>
           <th class="px-4 py-2">Hall Provost</th>
           <th class="px-4 py-2">Head</th>
@@ -31,9 +33,10 @@
           :key="index"
           class="hover:bg-blue-50 transition"
         >
-          <td class="px-4 py-2">{{ index + 1 }}</td>
+          <td class="px-4 py-2">{{ record.student_name }}</td>
+          <td class="px-4 py-2">{{ record.discipline }}</td>
+          <td class="px-4 py-2">{{ record.hall }}</td>
           <td class="px-4 py-2">
-            {{ record.librarian ? "Approved" : "Pending" }}
             <StatusBadge :approved="record.librarian" />
           </td>
           <td class="px-4 py-2">
@@ -59,7 +62,7 @@
                 class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                 @click="submitApproval(record.id)"
               >
-                Approve {{ canApprove(record) }}
+                Approve
               </button>
             </template>
           </td>
@@ -243,6 +246,9 @@ const getAllForm = async () => {
     allFormList.value = response.data.results;
 
     statusRecords.value = response.data.results.map((form) => ({
+      student_name: form.student_details.student_id,
+      discipline: form.discipline_details.name,
+      hall: form.hall_details.name,
       id: form.id,
       librarian: form.is_librarian_approved,
       hall_provost: form.is_provost_approved,

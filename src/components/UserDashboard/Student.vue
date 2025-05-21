@@ -1,23 +1,6 @@
 <template>
   <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside :class="['bg-gray-800 text-white transition-all duration-300', collapsed ? 'w-20' : 'w-64']">
-      <div class="h-16 flex items-center justify-center text-lg font-bold border-b border-gray-700">
-        <span v-if="!collapsed">Menu</span>
-      </div>
-      <ul class="p-2 space-y-1">
-
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center" @click="goToStatus"> Status </li>
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center" @click="goToLogin"> Sign Out </li>
-        <!-- <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Option 2</li> -->
-
-      </ul>
-      <div class="text-center py-4">
-        <button @click="collapsed = !collapsed" class="text-xs text-gray-400 hover:text-white">
-          {{ collapsed ? 'Expand' : 'Collapse' }}
-        </button>
-      </div>
-    </aside>
+    
 
     <!-- Main Layout -->
     <div class="flex-1 flex flex-col">
@@ -26,8 +9,10 @@
         <h1 class="text-xl font-semibold">Welcome to KU CERTIFICATE CLEARANCE PORTAL</h1>
       </header>
 
+      <StatusPage />
+
       <!-- Content -->
-      <main class="p-4 flex-1 bg-gray-100">
+      <main v-if="user_type === 'student'" class="p-4 flex-1 bg-gray-100">
 
         <div class="flex justify-center pt-20 relative">
           <div
@@ -52,6 +37,10 @@ import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import studentService from '@/services/studentService'
 import { useUserStore } from '@/stores/userStore';
+import StatusPage from './StatusPage.vue';
+
+
+const user_type = useUserStore().user.user_type
 
 const collapsed = ref(false)
 const router = useRouter()
