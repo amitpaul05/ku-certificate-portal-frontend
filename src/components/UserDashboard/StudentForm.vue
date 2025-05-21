@@ -25,7 +25,7 @@
             label="Hall Name"
             name="hallname"
             :rules="[
-              { required: true, message: 'Please provide your Hall Name!' },
+              { required: false, message: 'Please provide your Hall Name!' },
             ]"
           >
             <a-select
@@ -45,7 +45,7 @@
             label="Degree"
             name="degree"
             :rules="[
-              { required: true, message: 'Please provide your Degree!' },
+              { required: false, message: 'Please provide your Degree!' },
             ]"
           >
             <a-select
@@ -62,7 +62,7 @@
             label="Total Credit"
             name="totalCredit"
             :rules="[
-              { required: true, message: 'Please provide your Total Credit!' },
+              { required: false, message: 'Please provide your Total Credit!' },
             ]"
           >
             <a-input-number
@@ -79,7 +79,7 @@
             label="Earned Credit"
             name="earnedCredit"
             :rules="[
-              { required: true, message: 'Please provide your Earned Credit!' },
+              { required: false, message: 'Please provide your Earned Credit!' },
             ]"
           >
             <a-input-number
@@ -95,7 +95,7 @@
           <a-form-item
             label="CGPA"
             name="cgpa"
-            :rules="[{ required: true, message: 'Please provide your CGPA!' }]"
+            :rules="[{ required: false, message: 'Please provide your CGPA!' }]"
           >
             <a-input-number
               placeholder="0.00"
@@ -111,7 +111,7 @@
          <a-form-item
             label="Date of Last Exam"
             name="date"
-            :rules="[{ required: true, message: 'Please select a date!' }]"
+            :rules="[{ required: false, message: 'Please select a date!' }]"
           >
             <a-date-picker
               v-model:value="formserviceDefaultValue.date_of_last_exam"
@@ -179,14 +179,13 @@ const getAllHall = async () => {
       label: hall.name,
     }));
   } catch (error) {
-    console.log(error);
+    
     toast.error("Something went wrong", { timeout: 1500 });
   }
 };
 
 onMounted(async () => {
   await getAllHall();
-  console.log("user", useUserStore().user.studentDetails);
 });
 
 const handleChange = (value) => {
@@ -217,14 +216,12 @@ const rules = computed(() => ({
 
 async function handleSubmit() {
 
-  console.log("Form data:", formserviceDefaultValue.value);
   try {
     await formService.createForm(formserviceDefaultValue.value);
     toast.success("Form created successfully", { timeout: 1500 });
 
     router.push({ name: "student" });
   } catch (err) {
-    // console.error(err);
     toast.error("Something went wrong. Please try again.", {
       timeout: 1500,
     });

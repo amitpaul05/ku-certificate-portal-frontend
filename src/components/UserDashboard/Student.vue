@@ -82,33 +82,14 @@ const getAllStudent = async () => {
       label: company.name,
     }))
   } catch (error) {
-    console.log(error)
+    
     toast.error('Something went wrong', { timeout: 1500 })
   }
 }
 
 onMounted(async () => {
-  console.log("user",useUserStore().user)
   await getAllStudent()
-  // if (recordId) {
-  //   try {
-  //     const response =
-  //       await bookingCompanyService.getBookingCompanyById(recordId)
-  //     bookingCompanyDefaultValue.value = response.data
-
-  //     if (response.data.company && allCompanyList.value.length) {
-  //       const previousSelectedCompany = allCompanyList.value.find(
-  //         item => item.id === response.data.company,
-  //       )
-  //       if (previousSelectedCompany) {
-  //         bookingCompanyDefaultValue.value.company = previousSelectedCompany.id
-  //         selectedCompany.value = previousSelectedCompany.id
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.error('Failed to fetch academy details:', err)
-  //   }
-  // }
+  
 })
 
 
