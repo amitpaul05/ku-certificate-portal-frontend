@@ -232,20 +232,6 @@ const rules = computed(() => ({
 }));
 
 async function handleSubmit() {
-  console.log(
-    "Submitting:",
-    formserviceDefaultValue.value.date_of_last_exam,
-    typeof formserviceDefaultValue.value.date_of_last_exam
-  );
-
-  console.log(
-    "Submitting:",
-    formserviceDefaultValue.value.date_of_last_exam,
-    typeof formserviceDefaultValue.value.date_of_last_exam
-  );
-  // Output should be: "2025-06-15" "string"
-
-  
 
   console.log("Form data:", formserviceDefaultValue.value);
   try {
