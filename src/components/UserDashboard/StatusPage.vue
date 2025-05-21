@@ -2,7 +2,7 @@
   <div class="p-6 bg-gray-100 min-h-screen">
     <h1 class="text-2xl font-bold text-blue-800 mb-4">Certificate Approval Status</h1>
 
-    <div v-if="statusRecords.length > 0 && statusRecords.every(status => Object.values(status).every(Boolean))"
+    <div v-if="statusRecords.length > 0 && isFullyApproved"
          class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
       🎉 <strong>Congratulations!</strong> Your request is approved.
       Please visit the Academic Section to collect your certificate.
@@ -22,13 +22,37 @@
       <tbody>
         <tr v-for="(record, index) in statusRecords" :key="index" class="hover:bg-blue-50 transition">
           <td class="px-4 py-2">{{ index + 1 }}</td>
-          <td class="px-4 py-2"><StatusBadge :approved="record.librarian" /></td>
-          <td class="px-4 py-2"><StatusBadge :approved="record.hall_provost" /></td>
-          <td class="px-4 py-2"><StatusBadge :approved="record.head" /></td>
-          <td class="px-4 py-2"><StatusBadge :approved="record.dsa" /></td>
           <td class="px-4 py-2">
-            <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                    @click="openModal(index)">View Details</button>
+            <StatusBadge
+              :label="record.librarian ? 'Approved' : 'Pending'"
+              :bgClass="record.librarian ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'"
+            />
+          </td>
+          <td class="px-4 py-2">
+            <StatusBadge
+              :label="record.hall_provost ? 'Approved' : 'Pending'"
+              :bgClass="record.hall_provost ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'"
+            />
+          </td>
+          <td class="px-4 py-2">
+            <StatusBadge
+              :label="record.head ? 'Approved' : 'Pending'"
+              :bgClass="record.head ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'"
+            />
+          </td>
+          <td class="px-4 py-2">
+            <StatusBadge
+              :label="record.dsa ? 'Approved' : 'Pending'"
+              :bgClass="record.dsa ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'"
+            />
+          </td>
+          <td class="px-4 py-2">
+            <button
+              class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+              @click="openModal(index)"
+            >
+              View Details
+            </button>
           </td>
         </tr>
       </tbody>
@@ -50,7 +74,10 @@
         </div>
 
         <!-- Approval Section -->
-        <div v-if="currentRole" class="mt-6 border-t pt-4">
+        <div
+          v-if="canApprove"
+          class="mt-6 border-t pt-4"
+        >
           <h3 class="font-semibold mb-2">🔐 {{ currentRoleLabel }} Approval</h3>
           <div class="flex items-center gap-4 mb-4">
             <label class="flex items-center gap-2">
@@ -60,9 +87,11 @@
               <input type="radio" v-model="approvalDecision" value="rejected" /> Rejected
             </label>
           </div>
-          <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                  :disabled="!approvalDecision"
-                  @click="submitApproval">
+          <button
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            :disabled="!approvalDecision"
+            @click="submitApproval"
+          >
             Submit Decision
           </button>
         </div>
@@ -85,6 +114,7 @@ import { toast } from 'vue3-toastify';
 
 const allFormList = ref([]);
 const statusRecords = ref([]);
+const isFullyApproved = ref(false);
 
 const showModal = ref(false);
 const selectedRecord = ref(null);
@@ -92,8 +122,22 @@ const selectedRecordIndex = ref(null);
 const approvalDecision = ref(null);
 const currentRole = ref(null);
 
+const userRole = ref(localStorage.getItem('role')); // 'student', 'librarian', 'hall_provost', 'head', 'dsa'
+
 const currentRoleLabel = computed(() => {
   return currentRole.value?.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+});
+
+const canApprove = computed(() => {
+  if (!currentRole.value || currentRole.value !== userRole.value) return false;
+
+  const record = statusRecords.value[selectedRecordIndex.value];
+  if (!record) return false;
+
+  if (currentRole.value === 'hall_provost') return record.librarian;
+  if (currentRole.value === 'head') return record.librarian && record.hall_provost;
+  if (currentRole.value === 'dsa') return record.librarian && record.hall_provost && record.head;
+  return true;
 });
 
 const detailSections = computed(() => [
@@ -132,6 +176,8 @@ const openModal = (index) => {
     dsa: form.is_dsa_approved
   };
 
+  statusRecords.value[index] = status;
+
   if (!status.librarian) currentRole.value = 'librarian';
   else if (!status.hall_provost) currentRole.value = 'hall_provost';
   else if (!status.head) currentRole.value = 'head';
@@ -149,24 +195,13 @@ const closeModal = () => {
 const submitApproval = async () => {
   if (!currentRole.value || !approvalDecision.value) return;
 
-  const formIndex = selectedRecordIndex.value;
-  const formId = allFormList.value[formIndex].id;
+  const formId = allFormList.value[selectedRecordIndex.value].id;
   const isApproved = approvalDecision.value === 'approved';
 
   try {
     await formService.updateApproval(formId, currentRole.value, isApproved);
     toast.success(`Successfully ${approvalDecision.value} by ${currentRoleLabel.value}`);
-
-    // Update local statusRecords to reflect approval change
-    statusRecords.value[formIndex][currentRole.value] = isApproved;
-
-    // Also update in allFormList so modal can reflect change if reopened
-    if (currentRole.value === 'hall_provost') {
-      allFormList.value[formIndex].hall_details.current_provost = isApproved ? 'ApprovedPerson' : null;
-    } else {
-      allFormList.value[formIndex][`is_${currentRole.value}_approved`] = isApproved;
-    }
-
+    await getAllForm();
     closeModal();
   } catch (error) {
     console.error(error);
@@ -185,6 +220,10 @@ const getAllForm = async () => {
       head: form.is_head_approved,
       dsa: form.is_dsa_approved
     }));
+
+    if (statusRecords.value.length > 0) {
+      isFullyApproved.value = Object.values(statusRecords.value[0]).every(Boolean);
+    }
   } catch (error) {
     console.error("Error fetching form data:", error);
     toast.error("Something went wrong");
